@@ -27,6 +27,8 @@ func main() {
 	http.HandleFunc("/getBooks",controller.GetBooks)
 	http.HandleFunc("/toUpdateBookPage", controller.ToUpdateBookPage)
 	http.HandleFunc("/getPageBooks", controller.GetPageBooks)
+	//根据价格范围查询
+	http.HandleFunc("/getPageBooksByPrice", controller.GetPageBooksByPrice)
 
 	http.ListenAndServe(":8080",nil)
 }
