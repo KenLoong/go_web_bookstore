@@ -3,6 +3,8 @@ package controller
 import (
 	"fmt"
 	"go_web_project/bookstore/dao"
+	"go_web_project/bookstore/model"
+	"go_web_project/bookstore/utils"
 	"html/template"
 	"net/http"
 )
@@ -12,9 +14,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	password := r.PostFormValue("password")
 	user, _ := dao.CheckUsernameAndPassword(username, password)
 	if user.ID > 0{
+		//添加Session
+		//生成UUID
+		uuid := utils.CreateUUID()
+
+		sess := &model.Session{
+			SessionID: uuid,
+			UserName: user.Username,
+			UserID: user.ID,
+		}
+		dao.AddSession(sess)
+		//响应cookie
+		cookie := http.Cookie{
+			Name: "user",
+			Value: uuid,
+			HttpOnly: true,
+		}
+		http.SetCookie(w,&cookie)
+
 		//用户名和密码正确
 		t := template.Must(template.ParseFiles("views/pages/user/login_success.html"))
-		t.Execute(w,"")
+		t.Execute(w,user)
 	}else {
 		//失败
 		t := template.Must(template.ParseFiles("views/pages/user/login.html"))
