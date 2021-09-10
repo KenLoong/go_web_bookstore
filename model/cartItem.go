@@ -1,5 +1,7 @@
 package model
 
+import "go_web_project/bookstore/utils"
+
 //CartItem 购物项结构体
 type CartItem struct {
 	CartItemID int64   //购物项的id
@@ -15,3 +17,4 @@ func (cartItem *CartItem) GetAmount() float64 {
 	price := cartItem.Book.Price
 	return float64(cartItem.Count) * price
 }
+
