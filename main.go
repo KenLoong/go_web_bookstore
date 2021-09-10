@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/main",IndexHandler)
 
 	http.HandleFunc("/login",controller.Login)
+	http.HandleFunc("/logout",controller.Logout)
 	http.HandleFunc("/regist",controller.Regist)
 	http.HandleFunc("/checkUsername",controller.CheckUserName)
 

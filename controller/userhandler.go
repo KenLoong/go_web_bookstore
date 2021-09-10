@@ -10,36 +10,61 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	username := r.PostFormValue("username")
-	password := r.PostFormValue("password")
-	user, _ := dao.CheckUsernameAndPassword(username, password)
-	if user.ID > 0{
-		//添加Session
-		//生成UUID
-		uuid := utils.CreateUUID()
 
-		sess := &model.Session{
-			SessionID: uuid,
-			UserName: user.Username,
-			UserID: user.ID,
-		}
-		dao.AddSession(sess)
-		//响应cookie
-		cookie := http.Cookie{
-			Name: "user",
-			Value: uuid,
-			HttpOnly: true,
-		}
-		http.SetCookie(w,&cookie)
-
-		//用户名和密码正确
-		t := template.Must(template.ParseFiles("views/pages/user/login_success.html"))
-		t.Execute(w,user)
+	flag,_ := dao.IsLogin(r)
+	if flag{
+		//已经登录，去首页
+		GetPageBooksByPrice(w,r)
 	}else {
-		//失败
-		t := template.Must(template.ParseFiles("views/pages/user/login.html"))
-		t.Execute(w,"")
+		username := r.PostFormValue("username")
+		password := r.PostFormValue("password")
+		user, _ := dao.CheckUsernameAndPassword(username, password)
+		if user.ID > 0{
+			//添加Session
+			//生成UUID
+			uuid := utils.CreateUUID()
+
+			sess := &model.Session{
+				SessionID: uuid,
+				UserName: user.Username,
+				UserID: user.ID,
+			}
+			dao.AddSession(sess)
+			//响应cookie
+			cookie := http.Cookie{
+				Name: "user",
+				Value: uuid,
+				HttpOnly: true,
+			}
+			http.SetCookie(w,&cookie)
+
+			//用户名和密码正确
+			t := template.Must(template.ParseFiles("views/pages/user/login_success.html"))
+			t.Execute(w,user)
+		}else {
+			//失败
+			t := template.Must(template.ParseFiles("views/pages/user/login.html"))
+			t.Execute(w,"")
+		}
 	}
+}
+
+//Logout //处理用户注销的函数
+func Logout(w http.ResponseWriter, r *http.Request) {
+	//获取Cookie
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		//获取cookie的value值
+		cookieValue := cookie.Value
+		//删除数据库中与之对应的Session
+		dao.DeleteSession(cookieValue)
+		//设置cookie失效
+		cookie.MaxAge = -1
+		//将修改之后的cookie发送给浏览器
+		http.SetCookie(w, cookie)
+	}
+	//去首页
+	GetPageBooksByPrice(w, r)
 }
 
 func Regist(w http.ResponseWriter, r *http.Request) {
