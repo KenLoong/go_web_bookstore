@@ -172,3 +172,23 @@ func GetPageBooksByPrice(pageNo string, minPrice string, maxPrice string) (*mode
 	}
 	return page, nil
 }
+
+//GetCartItemByBookIDAndCartID 根据图书的id和购物车的id获取对应的购物项
+func GetCartItemByBookIDAndCartID(bookID string, cartID string) (*model.CartItem, error) {
+	//写sql语句
+	sqlStr := "select id,count,amount,cart_id from cart_items where book_id = ? and cart_id = ?"
+	//执行
+	row := utils.Db.QueryRow(sqlStr, bookID, cartID)
+	//设置一个变量接收图书的id
+	//创建cartItem
+	cartItem := &model.CartItem{}
+	err := row.Scan(&cartItem.CartItemID, &cartItem.Count, &cartItem.Amount, &cartItem.CartID)
+	if err != nil {
+		return nil, err
+	}
+	//根据图书的id查询图书信息
+	book, _ := GetBookByID(bookID)
+	//将book设置到购物项
+	cartItem.Book = book
+	return cartItem, nil
+}

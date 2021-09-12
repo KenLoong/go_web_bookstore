@@ -23,3 +23,34 @@ func AddCart(cart *model.Cart) error {
 	}
 	return nil
 }
+
+//GetCartByUserID 根据用户的id从数据库中查询对应的购物车
+func GetCartByUserID(userID int) (*model.Cart, error) {
+	//写sql语句
+	sql := "select id,total_count,total_amount,user_id from carts where user_id = ?"
+	//执行sql
+	row := utils.Db.QueryRow(sql, userID)
+	//创建一个购物车
+	cart := &model.Cart{}
+	err := row.Scan(&cart.CartID, &cart.TotalCount, &cart.TotalAmount, &cart.UserID)
+	if err != nil {
+		return nil, err
+	}
+	//获取当前购物车中所有的购物项
+	cartItems, _ := GetCartItemsByCartID(cart.CartID)
+	//将所有的购物项设置到购物车中
+	cart.CartItems = cartItems
+	return cart, nil
+}
+
+//UpdateCart 更新购物车中的图书的总数量和总金额
+func UpdateCart(cart *model.Cart) error {
+	//写sql语句
+	sql := "update carts set total_count = ? , total_amount = ? where id = ?"
+	//执行
+	_, err := utils.Db.Exec(sql, cart.GetTotalCount(), cart.GetTotalAmount(), cart.CartID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
