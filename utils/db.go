@@ -16,6 +16,4 @@ func init() {
 		//抛异常
 		panic(err.Error())
 	}
-
-
 }

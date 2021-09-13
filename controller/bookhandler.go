@@ -100,6 +100,6 @@ func GetPageBooksByPrice(w http.ResponseWriter, r *http.Request) {
 
 	//解析模板文件
 	t := template.Must(template.ParseFiles("views/index.html"))
-	//执行
+	//执行(返回给前端)
 	t.Execute(w, page)
 }

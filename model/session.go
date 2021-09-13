@@ -4,7 +4,7 @@ type Session struct {
 	SessionID string
 	UserName  string
 	UserID    int
-	//Cart      *Cart
+	Cart      *Cart
 	//OrderID   string
 	//Orders    []*Order
 }

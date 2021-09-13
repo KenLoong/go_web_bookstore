@@ -5,8 +5,32 @@ import (
 	"go_web_project/bookstore/dao"
 	"go_web_project/bookstore/model"
 	"go_web_project/bookstore/utils"
+	"html/template"
 	"net/http"
 )
+
+//GetCartInfo 根据用户的id获取购物车信息
+func GetCartInfo(w http.ResponseWriter, r *http.Request) {
+	_, session := dao.IsLogin(r)
+	//获取用户的id
+	userID := session.UserID
+	//根据用户的id从数据库中获取对应的购物车
+	cart, _ := dao.GetCartByUserID(userID)
+	if cart != nil {
+		//将购物车设置到session中
+		session.Cart = cart
+		//解析模板文件
+		t := template.Must(template.ParseFiles("views/pages/cart/cart.html"))
+		//执行
+		t.Execute(w, session)
+	} else {
+		//该用户还没有购物车
+		//解析模板文件
+		t := template.Must(template.ParseFiles("views/pages/cart/cart.html"))
+		//执行(跳转到某个页面)
+		t.Execute(w, session)
+	}
+}
 
 //AddBook2Cart 添加图书到购物车
 func AddBook2Cart(w http.ResponseWriter, r *http.Request) {

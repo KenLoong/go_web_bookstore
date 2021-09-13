@@ -52,7 +52,7 @@ func GetSession(sessID string) (*model.Session, error) {
 
 //IsLogin 判断用户是否已经登录 false 没有登录 true 已经登录
 func IsLogin(r *http.Request) (bool, *model.Session) {
-	//根据Cookie的name获取Cookie
+	//根据Cookie的name获取Cookie,对应值是sessionId
 	cookie, _ := r.Cookie("user")
 	if cookie != nil {
 		//获取Cookie的value
