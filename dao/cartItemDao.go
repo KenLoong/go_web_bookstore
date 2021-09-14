@@ -56,3 +56,26 @@ func UpdateBookCount(cartItem *model.CartItem) error {
 	}
 	return nil
 }
+
+//DeleteCartItemsByCartID 根据购物车的id删除所有的购物项
+func DeleteCartItemsByCartID(cartID string) error {
+	//写sql语句
+	sql := "delete from cart_items where cart_id = ?"
+	_, err := utils.Db.Exec(sql, cartID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//DeleteCartItemByID 根据购物项的id删除购物项
+func DeleteCartItemByID(cartItemID string) error {
+	//写sql语句
+	sql := "delete from cart_items where id = ?"
+	//执行
+	_, err := utils.Db.Exec(sql, cartItemID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
