@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"go_web_project/bookstore/dao"
 	"go_web_project/bookstore/model"
@@ -179,29 +180,29 @@ func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 	dao.UpdateCart(cart)
 	//调用获取购物项信息的函数再次查询购物车信息
 	cart, _ = dao.GetCartByUserID(userID)
-	// GetCartInfo(w, r)
+	GetCartInfo(w, r)
 	//获取购物车中图书的总数量
-	//totalCount := cart.TotalCount
-	////获取购物车中图书的总金额
-	//totalAmount := cart.TotalAmount
-	//var amount float64
-	////获取购物车中更新的购物项中的金额小计
-	//cIs := cart.CartItems
-	//for _, v := range cIs {
-	//	if iCartItemID == v.CartItemID {
-	//		//这个就是我们寻找的购物项，此时获取当前购物项中的金额小计
-	//		amount = v.Amount
-	//	}
-	//}
-	////创建Data结构
-	//data := model.Data{
-	//	Amount:      amount,
-	//	TotalAmount: totalAmount,
-	//	TotalCount:  totalCount,
-	//}
-	////将data转换为json字符串
-	//json, _ := json.Marshal(data)
-	////响应到浏览器
-	//w.Write(json)
+	totalCount := cart.TotalCount
+	//获取购物车中图书的总金额
+	totalAmount := cart.TotalAmount
+	var amount float64
+	//获取购物车中更新的购物项中的金额小计
+	cIs := cart.CartItems
+	for _, v := range cIs {
+		if iCartItemID == v.CartItemID {
+			//这个就是我们寻找的购物项，此时获取当前购物项中的金额小计
+			amount = v.Amount
+		}
+	}
+	//创建Data结构
+	data := model.Data{
+		Amount:      amount,
+		TotalAmount: totalAmount,
+		TotalCount:  totalCount,
+	}
+	//将data转换为json字符串
+	json, _ := json.Marshal(data)
+	//响应到浏览器(响应json字符串)
+	w.Write(json)
 }
 
